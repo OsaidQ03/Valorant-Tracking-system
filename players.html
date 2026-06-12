@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VALORANT // PLAYERS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0f1923;
+    --bg-2: #121f2b;
+    --panel: #16232f;
+    --ink: #ece8e1;
+    --ink-dim: #8b97a4;
+    --red: #ff4655;
+    --green: #3ddc97;
+    --yellow: #ffd166;
+    --line: rgba(236, 232, 225, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── atmosphere ───────────────────────────── */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(900px 500px at 85% -10%, rgba(255, 70, 85, 0.14), transparent 60%),
+      radial-gradient(700px 600px at -10% 110%, rgba(61, 220, 151, 0.07), transparent 60%),
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,0.012) 3px 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* ── header ───────────────────────────────── */
+  header {
+    position: relative;
+    padding: 64px 0 40px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 48px;
+    animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .kicker::before {
+    content: "";
+    width: 34px; height: 2px;
+    background: var(--red);
+  }
+
+  h1 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(56px, 11vw, 124px);
+    line-height: 0.92;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin-top: 14px;
+  }
+  h1 .outline {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--ink);
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 18px;
+    color: var(--ink-dim);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+
+  /* big decorative slash behind the title */
+  header::after {
+    content: "";
+    position: absolute;
+    top: 8px; right: -40px;
+    width: 220px; height: 220px;
+    background: linear-gradient(135deg, rgba(255,70,85,0.9), rgba(255,70,85,0.25));
+    clip-path: polygon(38% 0, 62% 0, 24% 100%, 0 100%);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  /* ── form panel ───────────────────────────── */
+  .panel {
+    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    border: 1px solid var(--line);
+    clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 26px 100%, 0 calc(100% - 26px));
+    padding: 28px;
+    margin-bottom: 56px;
+    animation: rise 0.7s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .panel-title {
+    font-family: 'Anton', sans-serif;
+    text-transform: uppercase;
+    font-size: 20px;
+    letter-spacing: 0.06em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .panel-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    background: rgba(15, 25, 35, 0.8);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  }
+  textarea { resize: vertical; min-height: 64px; font-weight: 500; }
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(255, 70, 85, 0.15);
+  }
+
+  /* color picker */
+  .swatches { display: flex; gap: 10px; }
+  .swatch {
+    --c: var(--green);
+    width: 46px; height: 46px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: rgba(15, 25, 35, 0.8);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+    position: relative;
+    transition: transform 0.15s, border-color 0.2s;
+  }
+  .swatch::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    background: var(--c);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+    opacity: 0.45;
+    transition: opacity 0.2s;
+  }
+  .swatch.red { --c: var(--red); }
+  .swatch.yellow { --c: var(--yellow); }
+  .swatch:hover { transform: translateY(-2px); }
+  .swatch[aria-pressed="true"] { border-color: var(--c); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 35%, transparent); }
+  .swatch[aria-pressed="true"]::before { opacity: 1; }
+
+  .legend-toggle {
+    width: 46px; height: 46px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: rgba(15, 25, 35, 0.8);
+    color: rgba(190, 30, 45, 0.4);
+    font-size: 22px;
+    line-height: 1;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+    transition: transform 0.15s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .legend-toggle:hover { transform: translateY(-2px); }
+  .legend-toggle[aria-pressed="true"] {
+    color: #d31329;
+    border-color: #d31329;
+    background: rgba(90, 5, 15, 0.55);
+    box-shadow: 0 0 16px rgba(160, 10, 25, 0.55);
+    text-shadow: 0 0 10px rgba(211, 19, 41, 0.8);
+  }
+
+  .desc-row { margin-top: 16px; }
+
+  button.add {
+    margin-top: 20px;
+    width: 100%;
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--red);
+    border: none;
+    padding: 15px;
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    transition: filter 0.15s, transform 0.1s;
+  }
+  button.add:hover { filter: brightness(1.12); }
+  button.add:active { transform: scale(0.985); }
+
+  /* ── roster ───────────────────────────────── */
+  .roster-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    animation: rise 0.7s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .roster-head h2 {
+    font-family: 'Anton', sans-serif;
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .count {
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    font-size: 12px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+
+  .search-row {
+    margin-bottom: 20px;
+    animation: rise 0.7s 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #list { list-style: none; display: grid; gap: 14px; }
+
+  .player {
+    --c: var(--green);
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 18px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 9%, var(--panel)), var(--bg-2) 55%);
+    border: 1px solid var(--line);
+    border-left: none;
+    padding: 18px 20px 18px 24px;
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+    animation: slide-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .player[data-color="red"] { --c: var(--red); }
+  .player[data-color="yellow"] { --c: var(--yellow); }
+  .player { cursor: grab; }
+
+  /* MVP — only one player can hold it */
+  .mvp-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 200, 60, 0.28);
+    font-size: 19px;
+    line-height: 1;
+    padding: 0;
+    margin-left: 10px;
+    vertical-align: middle;
+    transition: color 0.2s, transform 0.15s;
+  }
+  .mvp-btn:hover { transform: scale(1.3); color: #ffc83c; }
+  .player.mvp .mvp-btn {
+    color: #ffc83c;
+    text-shadow: 0 0 10px rgba(255, 200, 60, 0.8);
+  }
+
+  .player.mvp {
+    border-color: rgba(255, 200, 60, 0.65);
+    box-shadow: 0 0 26px rgba(255, 200, 60, 0.25), inset 0 0 36px rgba(255, 200, 60, 0.06);
+  }
+  .player.mvp::after {
+    content: "★ MVP — BEST PLAYER";
+    position: absolute;
+    top: 0; right: 0;
+    font-family: 'Anton', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--bg);
+    background: linear-gradient(135deg, #ffd166, #ffaa2b);
+    padding: 5px 26px 4px 16px;
+    clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
+    box-shadow: 0 0 14px rgba(255, 200, 60, 0.45);
+  }
+  .player.dragging { opacity: 0.45; cursor: grabbing; }
+  .player.drop-above { box-shadow: inset 0 3px 0 0 var(--ink); }
+  .player.drop-below { box-shadow: inset 0 -3px 0 0 var(--ink); }
+  .player::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--c);
+  }
+
+  .tag {
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    color: var(--c);
+    border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
+    padding: 6px 10px 5px;
+    letter-spacing: 0.12em;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+    white-space: nowrap;
+  }
+
+  .player .name {
+    font-family: 'Anton', sans-serif;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c);
+    line-height: 1;
+  }
+  .player .desc {
+    margin-top: 6px;
+    color: var(--ink-dim);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .legend-tag {
+    display: inline-block;
+    font-family: 'Anton', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: #ffd9dd;
+    background: linear-gradient(135deg, #a00a19, #5a0510);
+    border: 1px solid rgba(255, 70, 85, 0.5);
+    padding: 4px 9px 3px;
+    margin-left: 10px;
+    vertical-align: middle;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+    box-shadow: 0 0 14px rgba(160, 10, 25, 0.6);
+    animation: pulse-danger 1.6s ease-in-out infinite;
+  }
+
+  @keyframes pulse-danger {
+    0%, 100% { box-shadow: 0 0 8px rgba(160, 10, 25, 0.4); }
+    50% { box-shadow: 0 0 18px rgba(211, 19, 41, 0.8); }
+  }
+
+  .star-btn {
+    background: none;
+    border: 1px solid var(--line);
+    color: rgba(190, 30, 45, 0.4);
+    font-size: 16px;
+    line-height: 1;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+    transition: color 0.2s, border-color 0.2s, transform 0.15s;
+  }
+  .star-btn:hover { transform: scale(1.15); }
+  .star-btn.active {
+    color: #d31329;
+    border-color: rgba(211, 19, 41, 0.7);
+    background: rgba(90, 5, 15, 0.55);
+    text-shadow: 0 0 8px rgba(211, 19, 41, 0.8);
+  }
+
+  .boards {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  #legendSection { grid-column: 1 / -1; margin-top: 32px; }
+  @media (max-width: 860px) { .boards { grid-template-columns: 1fr; } }
+
+  .roster-head.gold h2 {
+    color: #ffc83c;
+    text-shadow: 0 0 14px rgba(255, 200, 60, 0.45);
+  }
+
+  .board { container-type: inline-size; min-width: 0; }
+
+  @container (max-width: 600px) {
+    .player { grid-template-columns: auto 1fr; }
+    .controls { grid-column: 1 / -1; justify-content: space-between; }
+  }
+
+  .roster-head.danger h2 {
+    color: #d31329;
+    text-shadow: 0 0 14px rgba(211, 19, 41, 0.45);
+  }
+
+  .rank-btns { display: flex; flex-direction: column; gap: 4px; }
+  .rank-btn {
+    background: rgba(15, 25, 35, 0.8);
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-size: 10px;
+    line-height: 1;
+    width: 26px; height: 18px;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%);
+    transition: color 0.15s, border-color 0.15s;
+    padding: 0;
+  }
+  .rank-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-dim); }
+  .rank-btn:disabled { opacity: 0.25; cursor: default; }
+
+  .controls { display: flex; align-items: center; gap: 14px; }
+
+  .dots { display: flex; gap: 7px; }
+  .dot {
+    --dc: var(--green);
+    width: 18px; height: 18px;
+    border: 1px solid color-mix(in srgb, var(--dc) 70%, transparent);
+    background: color-mix(in srgb, var(--dc) 25%, transparent);
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+    transition: transform 0.15s, background 0.2s;
+    padding: 0;
+  }
+  .dot.red { --dc: var(--red); }
+  .dot.yellow { --dc: var(--yellow); }
+  .dot:hover { transform: scale(1.25); }
+  .dot.active { background: var(--dc); box-shadow: 0 0 10px color-mix(in srgb, var(--dc) 50%, transparent); }
+
+  .remove {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+  }
+  .remove:hover { color: var(--red); border-color: var(--red); background: rgba(255, 70, 85, 0.08); }
+
+  .empty {
+    border: 1px dashed var(--line);
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-dim);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 13px;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  }
+
+  @media (max-width: 560px) {
+    .player { grid-template-columns: 1fr; gap: 12px; }
+    .controls { justify-content: space-between; }
+    header::after { display: none; }
+  }
+
+  .print-btn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    cursor: pointer;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .print-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
+
+  /* password modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 14, 20, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  .modal-overlay[hidden] { display: none; }
+  .modal {
+    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    border: 1px solid rgba(255, 200, 60, 0.45);
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+    padding: 28px;
+    width: min(380px, calc(100vw - 48px));
+    box-shadow: 0 0 40px rgba(255, 200, 60, 0.15);
+  }
+  .modal-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #ffc83c;
+    margin-bottom: 8px;
+  }
+  .modal-text {
+    color: var(--ink-dim);
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  .modal input[type="password"] {
+    width: 100%;
+    background: rgba(15, 25, 35, 0.8);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    padding: 12px 14px;
+    outline: none;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  }
+  .modal input[type="password"]:focus {
+    border-color: #ffc83c;
+    box-shadow: 0 0 0 3px rgba(255, 200, 60, 0.15);
+  }
+  .modal-error {
+    margin-top: 10px;
+    color: var(--red);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .modal-actions button {
+    flex: 1;
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 11px;
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: filter 0.15s;
+  }
+  .modal-cancel {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+  }
+  .modal-cancel:hover { color: var(--ink); }
+  .modal-confirm {
+    background: linear-gradient(135deg, #ffd166, #ffaa2b);
+    border: none;
+    color: var(--bg);
+  }
+  .modal-confirm:hover { filter: brightness(1.1); }
+
+  /* ── print / PDF ──────────────────────────── */
+  @page { margin: 0; }
+
+  @media print {
+    * {
+      animation: none !important;
+      transition: none !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    html, body { background: var(--bg); }
+    body::before { display: none; }
+    .wrap { max-width: none; padding: 12mm 14mm; }
+
+    header, .panel, .search-row, .controls, .print-btn, .mvp-btn { display: none !important; }
+
+    .boards { display: flex; flex-direction: column; align-items: stretch; }
+    .board:first-child { max-width: 100%; order: 3; margin-top: 36px; }
+    #mvpSection { order: 1; margin-top: 0; }
+    #legendSection { order: 2; margin-top: 36px; }
+    .roster-head.danger h2 { text-shadow: none; }
+
+    .player { break-inside: avoid; }
+
+    .legend-tag { box-shadow: none; }
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateX(-14px); }
+    to { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="kicker">Tactical Roster // 5v5</span>
+    <h1>Valorant<br /><span class="outline">Players</span></h1>
+    <div class="header-meta">
+      <span>// Defy the limits</span>
+      <button type="button" id="printBtn" class="print-btn">⎙ Print / PDF</button>
+    </div>
+  </header>
+
+  <section class="panel" aria-label="Add player">
+    <div class="panel-title">Deploy Player Name</div>
+    <form id="form" autocomplete="off">
+      <div class="grid">
+        <div>
+          <label for="name">Player Name</label>
+          <input type="text" id="name" maxlength="40" required />
+        </div>
+        <div>
+          <label>Name Color</label>
+          <div class="swatches" id="swatches">
+            <button type="button" class="swatch green" data-color="green" aria-pressed="true" title="Green"></button>
+            <button type="button" class="swatch red" data-color="red" aria-pressed="false" title="Red"></button>
+            <button type="button" class="swatch yellow" data-color="yellow" aria-pressed="false" title="Yellow"></button>
+          </div>
+        </div>
+        <div>
+          <label>Legendary</label>
+          <button type="button" class="legend-toggle" id="legendToggle" aria-pressed="false" title="Legendary — do not play with him">★</button>
+        </div>
+      </div>
+      <div class="desc-row">
+        <label for="desc">Description <span style="opacity:.6">(optional)</span></label>
+        <textarea id="desc" maxlength="200"></textarea>
+      </div>
+      <button type="submit" class="add">+ Add to Roster</button>
+    </form>
+  </section>
+
+  <div class="search-row">
+    <label for="search">Search Players</label>
+    <input type="text" id="search" maxlength="40" />
+  </div>
+
+  <div class="boards" id="boards">
+    <section class="board">
+      <div class="roster-head">
+        <h2>Active Roster</h2>
+        <span class="count" id="count"></span>
+      </div>
+      <ul id="list"></ul>
+    </section>
+
+    <section id="mvpSection" class="board" hidden>
+      <div class="roster-head gold">
+        <h2>★ MVP — Best Player</h2>
+      </div>
+      <ul id="mvpList"></ul>
+    </section>
+
+    <section id="legendSection" class="board" hidden>
+      <div class="roster-head danger">
+        <h2>★ Legendary — Do Not Play</h2>
+        <span class="count" id="legendCount"></span>
+      </div>
+      <ul id="legendList"></ul>
+    </section>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="pwOverlay" hidden>
+  <div class="modal">
+    <div class="modal-title">★ MVP Access</div>
+    <p class="modal-text">Enter the password to set the MVP.</p>
+    <input type="password" id="pwInput" autocomplete="off" />
+    <div class="modal-error" id="pwError" hidden>Wrong password — access denied</div>
+    <div class="modal-actions">
+      <button type="button" class="modal-cancel" id="pwCancel">Cancel</button>
+      <button type="button" class="modal-confirm" id="pwConfirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'valorant-players'
+  const COLORS = ['green', 'red', 'yellow']
+  const TAGS = { green: 'RDY', red: 'HOT', yellow: 'WL' }
+
+  let players = []
+  try {
+    players = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
+  } catch (e) {
+    players = []
+  }
+
+  let selectedColor = 'green'
+  let selectedLegendary = false
+  let idSeq = Date.now()
+
+  const form = document.getElementById('form')
+  const nameInput = document.getElementById('name')
+  const descInput = document.getElementById('desc')
+  const list = document.getElementById('list')
+  const count = document.getElementById('count')
+  const swatches = document.getElementById('swatches')
+  const searchInput = document.getElementById('search')
+
+  const legendToggle = document.getElementById('legendToggle')
+  const legendList = document.getElementById('legendList')
+  const legendSection = document.getElementById('legendSection')
+  const legendCount = document.getElementById('legendCount')
+  const mvpSection = document.getElementById('mvpSection')
+  const mvpList = document.getElementById('mvpList')
+
+  searchInput.addEventListener('input', render)
+
+  document.getElementById('printBtn').addEventListener('click', () => window.print())
+
+  legendToggle.addEventListener('click', () => {
+    selectedLegendary = !selectedLegendary
+    legendToggle.setAttribute('aria-pressed', String(selectedLegendary))
+  })
+
+  swatches.addEventListener('click', (e) => {
+    const btn = e.target.closest('.swatch')
+    if (!btn) return
+    selectedColor = btn.dataset.color
+    swatches.querySelectorAll('.swatch').forEach((s) => {
+      s.setAttribute('aria-pressed', String(s === btn))
+    })
+  })
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const name = nameInput.value.trim()
+    if (!name) return
+    players.push({
+      id: idSeq++,
+      name,
+      color: selectedColor,
+      desc: descInput.value.trim(),
+      legendary: selectedLegendary,
+    })
+    save()
+    render()
+    form.reset()
+    selectedLegendary = false
+    legendToggle.setAttribute('aria-pressed', 'false')
+    nameInput.focus()
+  })
+
+  function movePlayer(id, dir) {
+    const idx = players.findIndex((p) => p.id === id)
+    if (idx === -1) return
+    const group = Boolean(players[idx].legendary)
+    let j = idx + dir
+    while (j >= 0 && j < players.length && Boolean(players[j].legendary) !== group) j += dir
+    if (j < 0 || j >= players.length) return
+    const tmp = players[idx]
+    players[idx] = players[j]
+    players[j] = tmp
+    save()
+    render()
+  }
+
+  function handleListClick(e) {
+    const card = e.target.closest('.player')
+    if (!card) return
+    const id = Number(card.dataset.id)
+    const player = players.find((p) => p.id === id)
+
+    const mvpBtn = e.target.closest('.mvp-btn')
+    if (mvpBtn && player) {
+      if (player.mvp) {
+        player.mvp = false
+        save()
+        render()
+      } else {
+        openPwModal(player.id)
+      }
+      return
+    }
+    const rankBtn = e.target.closest('.rank-btn')
+    if (rankBtn) {
+      movePlayer(id, rankBtn.dataset.dir === 'up' ? -1 : 1)
+      return
+    }
+    const starBtn = e.target.closest('.star-btn')
+    if (starBtn && player) {
+      player.legendary = !player.legendary
+      save()
+      render()
+      return
+    }
+    const dot = e.target.closest('.dot')
+    if (dot && player) {
+      player.color = dot.dataset.color
+      save()
+      render()
+      return
+    }
+    const removeBtn = e.target.closest('.remove')
+    if (removeBtn) {
+      players = players.filter((p) => p.id !== id)
+      save()
+      render()
+    }
+  }
+
+  list.addEventListener('click', handleListClick)
+  legendList.addEventListener('click', handleListClick)
+  mvpList.addEventListener('click', handleListClick)
+
+  const MVP_PASSWORD = 'osaid20003'
+  const pwOverlay = document.getElementById('pwOverlay')
+  const pwInput = document.getElementById('pwInput')
+  const pwError = document.getElementById('pwError')
+  let pendingMvpId = null
+
+  function openPwModal(id) {
+    pendingMvpId = id
+    pwInput.value = ''
+    pwError.hidden = true
+    pwOverlay.hidden = false
+    pwInput.focus()
+  }
+
+  function closePwModal() {
+    pendingMvpId = null
+    pwOverlay.hidden = true
+  }
+
+  function confirmPwModal() {
+    if (pwInput.value !== MVP_PASSWORD) {
+      pwError.hidden = false
+      pwInput.select()
+      return
+    }
+    const player = players.find((p) => p.id === pendingMvpId)
+    if (player) {
+      players.forEach((q) => (q.mvp = false))
+      player.mvp = true
+      player.legendary = false
+      save()
+      render()
+    }
+    closePwModal()
+  }
+
+  document.getElementById('pwConfirm').addEventListener('click', confirmPwModal)
+  document.getElementById('pwCancel').addEventListener('click', closePwModal)
+  pwOverlay.addEventListener('click', (e) => {
+    if (e.target === pwOverlay) closePwModal()
+  })
+  pwInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirmPwModal()
+    if (e.key === 'Escape') closePwModal()
+  })
+
+  let dragId = null
+
+  function setupDrag(ul, isLegendList) {
+    ul.addEventListener('dragstart', (e) => {
+      const card = e.target.closest('.player')
+      if (!card) return
+      dragId = Number(card.dataset.id)
+      card.classList.add('dragging')
+      e.dataTransfer.effectAllowed = 'move'
+    })
+    ul.addEventListener('dragend', () => {
+      dragId = null
+      document
+        .querySelectorAll('.player.dragging, .player.drop-above, .player.drop-below')
+        .forEach((c) => c.classList.remove('dragging', 'drop-above', 'drop-below'))
+    })
+    ul.addEventListener('dragover', (e) => {
+      if (dragId === null) return
+      e.preventDefault()
+      ul.querySelectorAll('.drop-above, .drop-below').forEach((c) =>
+        c.classList.remove('drop-above', 'drop-below')
+      )
+      const card = e.target.closest('.player')
+      if (!card || Number(card.dataset.id) === dragId) return
+      const rect = card.getBoundingClientRect()
+      const after = e.clientY > rect.top + rect.height / 2
+      card.classList.add(after ? 'drop-below' : 'drop-above')
+    })
+    ul.addEventListener('drop', (e) => {
+      if (dragId === null) return
+      e.preventDefault()
+      const dragged = players.find((p) => p.id === dragId)
+      if (!dragged || Boolean(dragged.legendary) !== isLegendList) return
+
+      const card = e.target.closest('.player')
+      if (card && Number(card.dataset.id) !== dragId) {
+        const target = players.find((p) => p.id === Number(card.dataset.id))
+        if (!target) return
+        const rect = card.getBoundingClientRect()
+        const after = e.clientY > rect.top + rect.height / 2
+        players = players.filter((p) => p.id !== dragId)
+        const idx = players.findIndex((p) => p.id === target.id)
+        players.splice(idx + (after ? 1 : 0), 0, dragged)
+      } else if (!card) {
+        // dropped on empty space in the list: move to the end of its group
+        players = players.filter((p) => p.id !== dragId)
+        let last = -1
+        players.forEach((p, i) => {
+          if (Boolean(p.legendary) === isLegendList) last = i
+        })
+        players.splice(last + 1, 0, dragged)
+      } else {
+        return
+      }
+      dragId = null
+      save()
+      render()
+    })
+  }
+
+  setupDrag(list, false)
+  setupDrag(legendList, true)
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(players))
+  }
+
+  function render() {
+    const query = searchInput.value.trim().toLowerCase()
+    const matches = (p) =>
+      !query ||
+      p.name.toLowerCase().includes(query) ||
+      (p.desc && p.desc.toLowerCase().includes(query))
+
+    const mvpPlayer = players.find((p) => p.mvp)
+    const active = players.filter((p) => !p.legendary && !p.mvp)
+    const legends = players.filter((p) => p.legendary && !p.mvp)
+
+    renderGroup(list, active, matches, 'No players deployed — add your first player above')
+    renderGroup(legendList, legends, matches, 'No players here')
+    renderGroup(mvpList, mvpPlayer ? [mvpPlayer] : [], matches, '')
+
+    count.textContent = groupCount(active, matches, query)
+    legendCount.textContent = groupCount(legends, matches, query)
+    legendSection.hidden = !legends.length
+    mvpSection.hidden = !mvpPlayer
+  }
+
+  function groupCount(group, matches, query) {
+    if (query) return group.filter(matches).length + ' of ' + group.length + ' Players'
+    return group.length + ' Player' + (group.length === 1 ? '' : 's')
+  }
+
+  function renderGroup(ul, group, matches, emptyMsg) {
+    ul.innerHTML = ''
+    if (!group.length) {
+      ul.innerHTML = '<li class="empty">' + emptyMsg + '</li>'
+      return
+    }
+    const visible = group.filter(matches)
+    if (!visible.length) {
+      ul.innerHTML = '<li class="empty">No players match your search</li>'
+      return
+    }
+    visible.forEach((p, i) => {
+      ul.appendChild(buildCard(p, group.indexOf(p), group.length, i))
+    })
+  }
+
+  function buildCard(p, rank, groupSize, animIndex) {
+    const li = document.createElement('li')
+    li.className = 'player' + (p.mvp ? ' mvp' : '')
+    li.dataset.id = p.id
+    li.dataset.color = p.color
+    li.draggable = true
+    li.title = 'Drag to reorder'
+    li.style.animationDelay = animIndex * 0.04 + 's'
+
+    const tag = document.createElement('span')
+    tag.className = 'tag'
+    tag.textContent = String(rank + 1).padStart(2, '0') + ' / ' + TAGS[p.color]
+
+    const info = document.createElement('div')
+    const name = document.createElement('div')
+    name.className = 'name'
+    name.textContent = p.name
+    if (p.legendary) {
+      const legend = document.createElement('span')
+      legend.className = 'legend-tag'
+      legend.textContent = '★ Do Not Play'
+      name.appendChild(legend)
+    }
+    const mvp = document.createElement('button')
+    mvp.type = 'button'
+    mvp.className = 'mvp-btn'
+    mvp.textContent = p.mvp ? '★' : '☆'
+    mvp.title = p.mvp ? 'Remove MVP' : 'Make MVP — best player (only one can hold it)'
+    name.appendChild(mvp)
+    info.appendChild(name)
+    if (p.desc) {
+      const desc = document.createElement('div')
+      desc.className = 'desc'
+      desc.textContent = p.desc
+      info.appendChild(desc)
+    }
+
+    const controls = document.createElement('div')
+    controls.className = 'controls'
+
+    const rankBtns = document.createElement('div')
+    rankBtns.className = 'rank-btns'
+    ;[
+      ['up', '▲', rank === 0],
+      ['down', '▼', rank === groupSize - 1],
+    ].forEach(([dir, glyph, disabled]) => {
+      const b = document.createElement('button')
+      b.type = 'button'
+      b.className = 'rank-btn'
+      b.dataset.dir = dir
+      b.textContent = glyph
+      b.disabled = disabled
+      b.title = 'Move rank ' + dir
+      rankBtns.appendChild(b)
+    })
+
+    const dots = document.createElement('div')
+    dots.className = 'dots'
+    COLORS.forEach((c) => {
+      const dot = document.createElement('button')
+      dot.type = 'button'
+      dot.className = 'dot ' + c + (p.color === c ? ' active' : '')
+      dot.dataset.color = c
+      dot.title = 'Set name color: ' + c
+      dots.appendChild(dot)
+    })
+
+    const star = document.createElement('button')
+    star.type = 'button'
+    star.className = 'star-btn' + (p.legendary ? ' active' : '')
+    star.title = p.legendary ? 'Move back to roster' : 'Legendary — do not play'
+    star.textContent = '★'
+
+    const remove = document.createElement('button')
+    remove.type = 'button'
+    remove.className = 'remove'
+    remove.textContent = 'Drop'
+
+    controls.appendChild(rankBtns)
+    controls.appendChild(dots)
+    controls.appendChild(star)
+    controls.appendChild(remove)
+
+    li.appendChild(tag)
+    li.appendChild(info)
+    li.appendChild(controls)
+    return li
+  }
+
+  render()
+</script>
+</body>
+</html>
