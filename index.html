@@ -723,6 +723,9 @@
 
 <script>
   const STORAGE_KEY = 'valorant-players'
+  // Shared roster store — every visitor reads/writes the same data (last write wins).
+  // Served by /api/players on Vercel; offline or local use falls back to localStorage only.
+  const SYNC_URL = '/api/players'
   const COLORS = ['green', 'red', 'yellow']
   const TAGS = { green: 'RDY', red: 'HOT', yellow: 'WL' }
 
@@ -735,7 +738,8 @@
 
   let selectedColor = 'green'
   let selectedLegendary = false
-  let idSeq = Date.now()
+  // random offset so two visitors adding at the same moment don't collide
+  let idSeq = Date.now() * 1000 + Math.floor(Math.random() * 1000)
 
   const form = document.getElementById('form')
   const nameInput = document.getElementById('name')
@@ -962,6 +966,37 @@
 
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(players))
+    pushShared()
+  }
+
+  let pushTimer = null
+  function pushShared() {
+    clearTimeout(pushTimer)
+    pushTimer = setTimeout(() => {
+      pushTimer = null
+      fetch(SYNC_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(players),
+      }).catch(() => {})
+    }, 400)
+  }
+
+  async function pullShared() {
+    if (dragId !== null || pushTimer !== null) return
+    try {
+      const res = await fetch(SYNC_URL, { headers: { Accept: 'application/json' } })
+      if (!res.ok) return
+      const data = await res.json()
+      if (!Array.isArray(data)) return
+      const incoming = JSON.stringify(data)
+      if (incoming === JSON.stringify(players)) return
+      players = data
+      localStorage.setItem(STORAGE_KEY, incoming)
+      render()
+    } catch (e) {
+      // offline — keep showing the local copy
+    }
   }
 
   function render() {
@@ -1096,6 +1131,13 @@
   }
 
   render()
+
+  // shared-roster sync: load on open, then keep fresh
+  pullShared()
+  setInterval(() => {
+    if (!document.hidden) pullShared()
+  }, 15000)
+  window.addEventListener('focus', pullShared)
 </script>
 </body>
 </html>
