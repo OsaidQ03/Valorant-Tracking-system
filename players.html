@@ -710,8 +710,8 @@
 
 <div class="modal-overlay" id="pwOverlay" hidden>
   <div class="modal">
-    <div class="modal-title">★ MVP Access</div>
-    <p class="modal-text">Enter the password to set the MVP.</p>
+    <div class="modal-title" id="pwTitle">★ MVP Access</div>
+    <p class="modal-text" id="pwText">Enter the password to set the MVP.</p>
     <input type="password" id="pwInput" autocomplete="off" />
     <div class="modal-error" id="pwError" hidden>Wrong password — access denied</div>
     <div class="modal-actions">
@@ -844,10 +844,8 @@
       return
     }
     const removeBtn = e.target.closest('.remove')
-    if (removeBtn) {
-      players = players.filter((p) => p.id !== id)
-      save()
-      render()
+    if (removeBtn && player) {
+      openPwModal(player.id, 'drop')
     }
   }
 
@@ -859,10 +857,20 @@
   const pwOverlay = document.getElementById('pwOverlay')
   const pwInput = document.getElementById('pwInput')
   const pwError = document.getElementById('pwError')
-  let pendingMvpId = null
+  const pwTitle = document.getElementById('pwTitle')
+  const pwText = document.getElementById('pwText')
+  let pendingAction = null
 
-  function openPwModal(id) {
-    pendingMvpId = id
+  function openPwModal(id, type = 'mvp') {
+    pendingAction = { id, type }
+    const player = players.find((p) => p.id === id)
+    if (type === 'drop') {
+      pwTitle.textContent = '✖ Drop Player'
+      pwText.textContent = 'Enter the password to drop ' + (player ? player.name : 'this player') + '.'
+    } else {
+      pwTitle.textContent = '★ MVP Access'
+      pwText.textContent = 'Enter the password to set the MVP.'
+    }
     pwInput.value = ''
     pwError.hidden = true
     pwOverlay.hidden = false
@@ -870,23 +878,30 @@
   }
 
   function closePwModal() {
-    pendingMvpId = null
+    pendingAction = null
     pwOverlay.hidden = true
   }
 
   function confirmPwModal() {
+    if (!pendingAction) return
     if (pwInput.value !== MVP_PASSWORD) {
       pwError.hidden = false
       pwInput.select()
       return
     }
-    const player = players.find((p) => p.id === pendingMvpId)
-    if (player) {
-      players.forEach((q) => (q.mvp = false))
-      player.mvp = true
-      player.legendary = false
+    if (pendingAction.type === 'drop') {
+      players = players.filter((p) => p.id !== pendingAction.id)
       save()
       render()
+    } else {
+      const player = players.find((p) => p.id === pendingAction.id)
+      if (player) {
+        players.forEach((q) => (q.mvp = false))
+        player.mvp = true
+        player.legendary = false
+        save()
+        render()
+      }
     }
     closePwModal()
   }
