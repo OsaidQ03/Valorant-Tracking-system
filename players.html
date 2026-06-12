@@ -982,6 +982,7 @@
     }, 400)
   }
 
+  let firstPull = true
   async function pullShared() {
     if (dragId !== null || pushTimer !== null) return
     try {
@@ -989,6 +990,14 @@
       if (!res.ok) return
       const data = await res.json()
       if (!Array.isArray(data)) return
+      // first visit with an empty shared store: upload this browser's
+      // existing roster instead of blanking it
+      if (firstPull && data.length === 0 && players.length > 0) {
+        firstPull = false
+        pushShared()
+        return
+      }
+      firstPull = false
       const incoming = JSON.stringify(data)
       if (incoming === JSON.stringify(players)) return
       players = data
