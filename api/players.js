@@ -1,5 +1,5 @@
 // Same-origin relay to the shared roster store, so the browser never hits CORS.
-const STORE = 'https://jsonblob.com/api/jsonBlob/019ebb52-ab60-76e2-b22a-c695979fdd9c'
+const STORE = 'https://jsonblob.com/api/jsonBlob/019ec76c-e335-7899-9e3e-b708ad4ca9fd'
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store')
