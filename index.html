@@ -285,7 +285,7 @@
   .player[data-color="yellow"] { --c: var(--yellow); }
   .player { cursor: grab; }
 
-  /* MVP — only one player can hold it */
+  /* MVP — up to MAX_MVP players can hold it */
   .mvp-btn {
     background: none;
     border: none;
@@ -299,6 +299,7 @@
     transition: color 0.2s, transform 0.15s;
   }
   .mvp-btn:hover { transform: scale(1.3); color: #ffc83c; }
+  .mvp-btn:disabled { transform: none; color: rgba(255, 200, 60, 0.12); cursor: not-allowed; }
   .player.mvp .mvp-btn {
     color: #ffc83c;
     text-shadow: 0 0 10px rgba(255, 200, 60, 0.8);
@@ -804,12 +805,15 @@
     nameInput.focus()
   })
 
+  // which list a player is shown in; MVP wins over legendary
+  const section = (p) => (p.mvp ? 'mvp' : p.legendary ? 'legend' : 'active')
+
   function movePlayer(id, dir) {
     const idx = players.findIndex((p) => p.id === id)
     if (idx === -1) return
-    const group = Boolean(players[idx].legendary)
+    const group = section(players[idx])
     let j = idx + dir
-    while (j >= 0 && j < players.length && Boolean(players[j].legendary) !== group) j += dir
+    while (j >= 0 && j < players.length && section(players[j]) !== group) j += dir
     if (j < 0 || j >= players.length) return
     const tmp = players[idx]
     players[idx] = players[j]
@@ -864,7 +868,8 @@
   legendList.addEventListener('click', handleListClick)
   mvpList.addEventListener('click', handleListClick)
 
-  const MVP_PASSWORD = 'osaid20003'
+  const MVP_PASSWORD = 'Asood2003'
+  const MAX_MVP = 2
   const pwOverlay = document.getElementById('pwOverlay')
   const pwInput = document.getElementById('pwInput')
   const pwError = document.getElementById('pwError')
@@ -906,8 +911,7 @@
       render()
     } else {
       const player = players.find((p) => p.id === pendingAction.id)
-      if (player) {
-        players.forEach((q) => (q.mvp = false))
+      if (player && players.filter((q) => q.mvp).length < MAX_MVP) {
         player.mvp = true
         player.legendary = false
         save()
@@ -1051,18 +1055,18 @@
       p.name.toLowerCase().includes(query) ||
       (p.desc && p.desc.toLowerCase().includes(query))
 
-    const mvpPlayer = players.find((p) => p.mvp)
+    const mvps = players.filter((p) => p.mvp)
     const active = players.filter((p) => !p.legendary && !p.mvp)
     const legends = players.filter((p) => p.legendary && !p.mvp)
 
     renderGroup(list, active, matches, 'No players deployed — add your first player above')
     renderGroup(legendList, legends, matches, 'No players here')
-    renderGroup(mvpList, mvpPlayer ? [mvpPlayer] : [], matches, '')
+    renderGroup(mvpList, mvps, matches, '')
 
     count.textContent = groupCount(active, matches, query)
     legendCount.textContent = groupCount(legends, matches, query)
     legendSection.hidden = !legends.length
-    mvpSection.hidden = !mvpPlayer
+    mvpSection.hidden = !mvps.length
   }
 
   function groupCount(group, matches, query) {
@@ -1113,7 +1117,13 @@
     mvp.type = 'button'
     mvp.className = 'mvp-btn'
     mvp.textContent = p.mvp ? '★' : '☆'
-    mvp.title = p.mvp ? 'Remove MVP' : 'Make MVP — best player (only one can hold it)'
+    const mvpFull = !p.mvp && players.filter((q) => q.mvp).length >= MAX_MVP
+    mvp.disabled = mvpFull
+    mvp.title = p.mvp
+      ? 'Remove MVP'
+      : mvpFull
+        ? 'Already ' + MAX_MVP + ' MVPs — remove one first'
+        : 'Make MVP — best player (up to ' + MAX_MVP + ')'
     name.appendChild(mvp)
     info.appendChild(name)
     if (p.desc) {
