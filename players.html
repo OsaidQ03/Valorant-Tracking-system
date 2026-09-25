@@ -509,6 +509,14 @@
   }
   .print-btn:hover { color: var(--ink); border-color: var(--ink-dim); }
 
+  .header-meta { flex-wrap: wrap; }
+  .header-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .sync { display: inline-flex; align-items: center; gap: 8px; }
+  .sync::before { content: ""; width: 8px; height: 8px; background: currentColor; }
+  .sync.live { color: var(--green); }
+  .sync.live::before { box-shadow: 0 0 8px var(--green); }
+  .sync.offline { color: var(--red); }
+
   /* password modal */
   .modal-overlay {
     position: fixed;
@@ -643,7 +651,10 @@
     <h1>Valorant<br /><span class="outline">Players</span></h1>
     <div class="header-meta">
       <span>// Defy the limits</span>
-      <button type="button" id="printBtn" class="print-btn">⎙ Print / PDF</button>
+      <div class="header-actions">
+        <span id="syncStatus" class="sync" hidden></span>
+        <button type="button" id="printBtn" class="print-btn">⎙ Print / PDF</button>
+      </div>
     </div>
   </header>
 
@@ -984,6 +995,13 @@
     pushShared()
   }
 
+  const syncStatus = document.getElementById('syncStatus')
+  function setSync(ok) {
+    syncStatus.hidden = false
+    syncStatus.className = 'sync ' + (ok ? 'live' : 'offline')
+    syncStatus.textContent = ok ? 'Live' : 'Offline — saved on this device only'
+  }
+
   let pushTimer = null
   function pushShared() {
     clearTimeout(pushTimer)
@@ -993,7 +1011,9 @@
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(players),
-      }).catch(() => {})
+      })
+        .then((res) => setSync(res.ok))
+        .catch(() => setSync(false))
     }, 400)
   }
 
@@ -1002,9 +1022,9 @@
     if (dragId !== null || pushTimer !== null) return
     try {
       const res = await fetch(SYNC_URL, { headers: { Accept: 'application/json' } })
-      if (!res.ok) return
-      const data = await res.json()
-      if (!Array.isArray(data)) return
+      const data = res.ok ? await res.json() : null
+      if (!Array.isArray(data)) return setSync(false)
+      setSync(true)
       // first visit with an empty shared store: upload this browser's
       // existing roster instead of blanking it
       if (firstPull && data.length === 0 && players.length > 0) {
@@ -1020,6 +1040,7 @@
       render()
     } catch (e) {
       // offline — keep showing the local copy
+      setSync(false)
     }
   }
 
